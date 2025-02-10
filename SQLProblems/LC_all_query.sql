@@ -217,8 +217,23 @@ INSERT INTO Confirmations (user_id, time_stamp, ACTION) VALUES ('7', '2021-06-14
 INSERT INTO Confirmations (user_id, time_stamp, ACTION) VALUES ('2', '2021-01-22 00:00:00', 'confirmed');
 INSERT INTO Confirmations (user_id, time_stamp, ACTION) VALUES ('2', '2021-02-28 23:59:59', 'timeout');
 
+# 1934. Confirmation Rate ----------------------------------------------------------------------
 SELECT s.user_id, 
        ROUND(COALESCE(SUM(CASE WHEN c.action = 'confirmed' THEN 1 ELSE 0 END) / COUNT(c.user_id), 0), 2) AS confirmation_rate
 FROM Signups s
 LEFT JOIN Confirmations c ON s.user_id = c.user_id
 GROUP BY s.user_id;
+
+# 620. Not Boring Movies -------------------------------------
+SELECT * FROM cinema WHERE id % 2 != 0 AND description != 'boring'
+ORDER BY rating DESC;
+
+# 1251. Average Selling Price -------------------------------------
+SELECT 
+    p.product_id, 
+    COALESCE(ROUND(SUM(p.price * u.units) / NULLIF(SUM(u.units), 0), 2), 0) AS average_price
+FROM Prices p
+LEFT JOIN UnitsSold u 
+    ON p.product_id = u.product_id 
+    AND u.purchase_date BETWEEN p.start_date AND p.end_date
+GROUP BY p.product_id;
